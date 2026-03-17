@@ -1,0 +1,41 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: hw1
+  data:
+    redis:
+      host: localhost
+      port: 6380
+      timeout: 3s
+      repositories:
+        enabled: false
+  jackson:
+    default-property-inclusion: non_null
+
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.example.hw1.domain
+  configuration:
+    map-underscore-to-camel-case: true
+
+app:
+  datasource:
+    master:
+      jdbc-url: jdbc:mysql://localhost:3307/hw1?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      username: app_user
+      password: app_pass
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    slave:
+      jdbc-url: jdbc:mysql://localhost:3308/hw1?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      username: app_user
+      password: app_pass
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  cache:
+    product-detail-ttl-minutes: 30
+    product-detail-jitter-minutes: 10
+    null-value-ttl-minutes: 2
+    lock-ttl-seconds: 10
+    lock-retry-millis: 100
+    lock-max-retries: 5
