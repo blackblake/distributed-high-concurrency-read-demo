@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: hw1-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${SPRING_CLOUD_NACOS_SERVER_ADDR:nacos:8848}
+        namespace: public
+      config:
+        server-addr: ${SPRING_CLOUD_NACOS_SERVER_ADDR:nacos:8848}
+        file-extension: yaml
+        namespace: public
+  config:
+    import:
+      - optional:nacos:hw1-service.yaml
+
+# Disable Nacos when running outside docker (local dev / unit tests)
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
+      config:
+        enabled: false

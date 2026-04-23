@@ -1,0 +1,31 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: hw1-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          # Auto-build routes from Nacos discovery: /hw1-service/** → hw1-service
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # Explicit, friendlier prefix: /api/** → hw1-service (load-balanced by Nacos)
+        - id: hw1-service-api
+          uri: lb://hw1-service
+          predicates:
+            - Path=/api/**
+        - id: hw1-service-actuator
+          uri: lb://hw1-service
+          predicates:
+            - Path=/actuator/hw1-service/**
+          filters:
+            - StripPrefix=2
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway

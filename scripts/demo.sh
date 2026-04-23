@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-BASE_URL="${BASE_URL:-http://localhost:8080}"
+BASE_URL="${BASE_URL:-http://localhost}"
 
 echo "[1] create product"
 CREATE_RESPONSE=$(curl -s -X POST "${BASE_URL}/api/products" \

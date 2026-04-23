@@ -1,0 +1,82 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: hw1-service
+  jackson:
+    default-property-inclusion: non_null
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6380}
+      timeout: 3s
+      repositories:
+        enabled: false
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: 3
+      properties:
+        enable.idempotence: true
+    consumer:
+      group-id: hw1-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: false
+    listener:
+      ack-mode: manual_immediate
+
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.example.hw1.domain,com.example.hw1.order.domain,com.example.hw1.inventory.domain,com.example.hw1.outbox.domain
+  configuration:
+    map-underscore-to-camel-case: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+app:
+  instance-id: ${APP_INSTANCE_ID:local-dev}
+  datasource:
+    master:
+      jdbc-url: ${APP_DATASOURCE_MASTER_JDBC_URL:jdbc:mysql://localhost:3307/hw1?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+      username: ${APP_DATASOURCE_MASTER_USERNAME:app_user}
+      password: ${APP_DATASOURCE_MASTER_PASSWORD:app_pass}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    slave:
+      jdbc-url: ${APP_DATASOURCE_SLAVE_JDBC_URL:jdbc:mysql://localhost:3308/hw1?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+      username: ${APP_DATASOURCE_SLAVE_USERNAME:app_user}
+      password: ${APP_DATASOURCE_SLAVE_PASSWORD:app_pass}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  cache:
+    product-detail-ttl-minutes: 30
+    product-detail-jitter-minutes: 10
+    null-value-ttl-minutes: 2
+    lock-ttl-seconds: 10
+    lock-retry-millis: 100
+    lock-max-retries: 5
+  seckill:
+    idempotency-ttl-minutes: 60
+    stock-init-ttl-hours: 24
+  snowflake:
+    worker-id: ${APP_SNOWFLAKE_WORKER_ID:1}
+    datacenter-id: ${APP_SNOWFLAKE_DATACENTER_ID:1}
+  kafka:
+    topics:
+      order-create: seckill.order.create
+      inventory-deduct: inventory.deduct
+      order-status: order.status.update
+  outbox:
+    poll-interval-ms: 1000
+    batch-size: 50
+  # Dynamic sample property demonstrated via Nacos + @RefreshScope
+  dynamic:
+    welcome-message: "Hello from local application.yml"

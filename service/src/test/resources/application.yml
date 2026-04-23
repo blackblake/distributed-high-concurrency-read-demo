@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    active: local
+  cloud:
+    nacos:
+      discovery:
+        enabled: false
+      config:
+        enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+
+management:
+  endpoints:
+    enabled-by-default: false

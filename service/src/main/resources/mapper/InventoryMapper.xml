@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hw1.inventory.mapper.InventoryMapper">
+
+    <select id="findByProduct" resultType="com.example.hw1.inventory.domain.Inventory">
+        SELECT product_id, total, available, locked, version
+        FROM inventory WHERE product_id = #{productId}
+    </select>
+
+    <update id="deduct">
+        UPDATE inventory
+        SET available = available - #{delta},
+            locked    = locked + #{delta},
+            version   = version + 1
+        WHERE product_id = #{productId} AND available &gt;= #{delta}
+    </update>
+
+    <update id="rollback">
+        UPDATE inventory
+        SET available = available + #{delta},
+            locked    = locked - #{delta},
+            version   = version + 1
+        WHERE product_id = #{productId} AND locked &gt;= #{delta}
+    </update>
+
+    <insert id="insertLog">
+        INSERT IGNORE INTO inventory_log(message_id, product_id, delta)
+        VALUES(#{messageId}, #{productId}, #{delta})
+    </insert>
+
+</mapper>
